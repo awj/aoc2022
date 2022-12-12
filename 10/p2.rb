@@ -32,7 +32,7 @@ class Instruction
 end
 
 class Machine
-  attr_accessor :cycles, :register, :samples, :instructions, :debug
+  attr_accessor :cycles, :register, :samples, :instructions, :debug, :screen
 
   def self.for(instruction_text)
     new(
@@ -49,6 +49,18 @@ class Machine
     @instructions = instructions
     @current_instruction = instructions.shift
     @debug = []
+
+    @screen = 6.times.map do |i|
+      "." * 40
+    end
+  end
+
+  def display
+    screen.each do |line|
+      puts line
+    end
+
+    nil
   end
 
   def run
@@ -58,11 +70,22 @@ class Machine
         return if @current_instruction.nil?
       end
 
+      draw!
+
       @cycles += 1
       @samples << (register * cycles) if should_sample?
 
       @current_instruction.tick(self)
       @debug << [cycles, register]
+    end
+  end
+
+  def draw!
+    row, position = cycles.divmod(40)
+    line = screen[row]
+
+    if [-1, 0, 1].include?(position - register)
+      line[position] = "#"
     end
   end
 
