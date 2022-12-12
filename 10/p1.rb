@@ -32,7 +32,7 @@ class Instruction
 end
 
 class Machine
-  attr_accessor :cycles, :register, :samples
+  attr_accessor :cycles, :register, :samples, :instructions, :debug
 
   def self.for(instruction_text)
     new(
@@ -48,6 +48,7 @@ class Machine
     @samples = []
     @instructions = instructions
     @current_instruction = instructions.shift
+    @debug = []
   end
 
   def run
@@ -57,9 +58,11 @@ class Machine
         return if @current_instruction.nil?
       end
 
-      @current_instruction.tick(self)
       @cycles += 1
       @samples << (register * cycles) if should_sample?
+
+      @current_instruction.tick(self)
+      @debug << [cycles, register]
     end
   end
 
