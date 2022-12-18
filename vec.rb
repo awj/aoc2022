@@ -50,6 +50,29 @@ class Vec
     end
   end
 
+  def just_beyond(dist)
+    Enumerator.new do |points|
+      d = dist + 1
+
+      n = delta(0, -d)
+      s = delta(0, d)
+      e = delta(d, 0)
+      w = delta(-d, 0)
+
+      points << n
+      points << s
+      points << e
+      points << w
+
+      dist.times do
+        points << (n = n.delta(1, 1))
+        points << (e = e.delta(-1, 1))
+        points << (s = s.delta(-1, -1))
+        points << (w = w.delta(1, -1))
+      end
+    end
+  end
+
   def closer_points(other)
     dist = manhattan(other)
 
